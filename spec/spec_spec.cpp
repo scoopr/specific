@@ -58,9 +58,12 @@ describe(Spec, "should matcher failures (THESE SHOULD ALL FAIL!)") {
         should_not_equal( ClassThatEqualsAny(), false );
     }
 
+    it("spec framework should fail and continue execution even if unexpected exception occurs") {
+        throw 1;
+    }
     
     it("should have should_throw, failing when no exception thrown") {
-        should_throw( 1+1, std::exception);
+        should_throw( (void)0 , std::exception);
     }
 
     it("should have should_throw, failing when wrong exception thrown") {
