@@ -43,6 +43,7 @@ depend:
 
 # DO NOT DELETE
 
+main.o: spec/spec.h
 spec/spec.o: spec/spec.h
 spec/spec_spec.o: spec/spec.h
 spec/spec.o: spec/spec.h
