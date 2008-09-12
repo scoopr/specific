@@ -11,6 +11,8 @@ namespace specific {
     public:
         std::vector<SpecResult> mResults;
         void startGroup(std::string /*group*/, std::string /*description*/) {}
+        void addFailedAssertation(std::string msg, const char *file, int line) {
+        }
         void addSpecResult(SpecResult r) {
             switch(r.type) {
                 case SpecResult::PASSED:
@@ -30,9 +32,6 @@ namespace specific {
             std::cout << std::endl;
             for(std::vector<SpecResult>::iterator i=mResults.begin(); i != mResults.end(); ++i)
             {
-                if( i->type != SpecResult::PASSED ) {
-                    std::cout << "Failed assertation: " << i->test << std::endl;
-                }
             }
         }
     };
@@ -42,6 +41,10 @@ namespace specific {
     public:
         void startGroup(std::string group, std::string description) {
             std::cout << "* " << group << ": " << description << std::endl;            
+        }
+        void addFailedAssertation(std::string msg, const char *file, int line) {
+            std::cout << std::endl << std::endl;
+            std::cout << "     Failed assertation at " << file << ":" << line << ": " << msg << std::endl;
         }
         void addSpecResult(SpecResult r) {
             std::cout << " - " << r.test;
@@ -109,11 +112,6 @@ namespace specific {
         r.type = SpecResult::PASSED;
         if(mLastFailed) r.type = SpecResult::FAILED;
         if(mError) r.type = SpecResult::ERRORED;
-        if(mFile) {
-            r.file = mFile;
-            r.line = mLine;
-            mFile = NULL;            
-        }
         r.test = mName;
         mWriter->addSpecResult( r );
         
@@ -127,6 +125,7 @@ namespace specific {
         if(!value) {
 /*            std::cout << std::endl << "  Failed assertation at " << file << ":" << line << ": " << 
                 std::endl <<  "    " << message;*/
+            mWriter->addFailedAssertation(message, file, line);
             mLastFailed = mFailed = true;
             mNumFailures+=1;
         }
@@ -134,6 +133,7 @@ namespace specific {
 
     
     void SpecBase::error(std::string msg) {
+        mWriter->addFailedAssertation(msg, "exception", 0);
         mNumFailures+=1;
         mLastFailed = true;
         mFailed = true;
@@ -163,7 +163,8 @@ namespace specific {
 
     bool SpecRunner::run(const std::string subset) {
         bool success = true;
-        StdoutWriter writer;
+//        StdoutWriter writer;
+        SpecdocWriter writer;
         
         writer.start();
         std::vector<SpecBase*>::iterator i = mSpecs.begin();

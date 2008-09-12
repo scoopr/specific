@@ -22,14 +22,13 @@ namespace specific {
         std::string group;
         std::string description;
         std::string test;
-        std::string file;
-        int line;
     };
 
     class SpecWriter {
     public:
         virtual ~SpecWriter() {}
         virtual void startGroup(std::string group, std::string description) = 0;
+        virtual void addFailedAssertation(std::string msg, const char *file, int line) = 0;
         virtual void addSpecResult(SpecResult r) = 0;
         virtual void start() = 0;
         virtual void stop() = 0;
@@ -70,6 +69,7 @@ namespace specific {
         int mNumTests;
         int mNumFailures;
         char *mFile;
+        std::string mErrorMessage;
         int mLine;
     };
 
