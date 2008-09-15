@@ -8,9 +8,10 @@ int main(int argc, char *argv[])
     std::string subset("");
     if(argc > 1) subset=argv[1];
 
-    bool success = specific::SpecRunner::getInstance().run(subset);
+    specific::ProgressWriter writer;
+    //specific::SpecdocWriter writer;
 
-    specific::SpecRunner::getInstance().printSummary();
+    bool success = specific::SpecRunner::getInstance().run(writer, subset);
 
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }

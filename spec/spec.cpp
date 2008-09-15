@@ -6,64 +6,61 @@ namespace specific {
 
 
 
-
-    class StdoutWriter : public SpecWriter {
-    public:
-        std::vector<SpecResult> mResults;
-        void startGroup(std::string /*group*/, std::string /*description*/) {}
-        void addFailedAssertation(std::string msg, const char *file, int line) {
+    void ProgressWriter::startGroup(std::string /*group*/, std::string /*description*/) {}
+    void ProgressWriter::addSpecResult(SpecResult r) {
+         SpecWriter::addSpecResult(r);
+        switch(r.type) {
+            case SpecResult::PASSED:
+                std::cout << ".";
+                break;
+            case SpecResult::FAILED:
+                std::cout << "F";
+                break;
+            case SpecResult::ERRORED:
+                std::cout << "E";
+                break;
         }
-        void addSpecResult(SpecResult r) {
-            switch(r.type) {
-                case SpecResult::PASSED:
-                    std::cout << ".";
-                    break;
-                case SpecResult::FAILED:
-                    std::cout << "F";
-                    break;
-                case SpecResult::ERRORED:
-                    std::cout << "E";
-                    break;
-            }
-            mResults.push_back( r );
-        }
-        void start() {}
-        void stop() {
+    }
+    void ProgressWriter::start() {}
+    void ProgressWriter::stop() {
+        std::cout << std::endl;
+        for(std::vector<SpecFailure>::iterator i=mFailures.begin(); i != mFailures.end(); ++i)
+        {
             std::cout << std::endl;
-            for(std::vector<SpecResult>::iterator i=mResults.begin(); i != mResults.end(); ++i)
-            {
-            }
+            std::cout << "Failed assertation at " << i->file << ":"
+            << i->line << ":" << std::endl << "  " << i->msg;
         }
-    };
+    }
 
 
-    class SpecdocWriter : public SpecWriter {
-    public:
-        void startGroup(std::string group, std::string description) {
-            std::cout << "* " << group << ": " << description << std::endl;            
+
+    void SpecdocWriter::startGroup(std::string group, std::string description) {
+        std::cout << group << ": " << description << std::endl;            
+    }
+
+    void SpecdocWriter::addFailedAssertation(std::string msg, const char *file, int line) {
+        //std::cout << std::endl << std::endl;
+        //std::cout << "     Failed assertation at " << file << ":" << line << ": " << msg << std::endl;
+    }
+
+    void SpecdocWriter::addSpecResult(SpecResult r) {
+        std::cout << "- " << r.test;
+        switch(r.type) {
+            case SpecResult::PASSED:
+                std::cout << " [OK]";
+                break;
+            case SpecResult::FAILED:
+                std::cout << " [FAILED]";
+                break;
+            case SpecResult::ERRORED:
+                std::cout << " [ERROR]";
+                break;
         }
-        void addFailedAssertation(std::string msg, const char *file, int line) {
-            std::cout << std::endl << std::endl;
-            std::cout << "     Failed assertation at " << file << ":" << line << ": " << msg << std::endl;
-        }
-        void addSpecResult(SpecResult r) {
-            std::cout << " - " << r.test;
-            switch(r.type) {
-                case SpecResult::PASSED:
-                    std::cout << " [OK]";
-                    break;
-                case SpecResult::FAILED:
-                    std::cout << " [FAILED]";
-                    break;
-                case SpecResult::ERRORED:
-                    std::cout << " [ERROR]";
-                    break;
-            }
-            std::cout << std::endl;
-        }
-        void start() {}
-        void stop() {}
-    };
+        std::cout << std::endl;
+    }
+
+    void SpecdocWriter::start() {}
+    void SpecdocWriter::stop() {}
 
 
 
@@ -161,10 +158,8 @@ namespace specific {
     }
 
 
-    bool SpecRunner::run(const std::string subset) {
+    bool SpecRunner::run(SpecWriter& writer, const std::string subset) {
         bool success = true;
-//        StdoutWriter writer;
-        SpecdocWriter writer;
         
         writer.start();
         std::vector<SpecBase*>::iterator i = mSpecs.begin();
@@ -197,11 +192,6 @@ namespace specific {
         return success;
     }
 
-    void SpecRunner::printSummary() {
-        std::cout << "Result: " << mNumTotalFailures << " failures in "
-                                << mNumTotalTests << " tests in " 
-                                << mSpecs.size() << " specs." << std::endl;
-    }
 
 }
 

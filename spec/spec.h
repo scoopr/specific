@@ -24,15 +24,54 @@ namespace specific {
         std::string test;
     };
 
+
+    class SpecFailure {
+    public:
+        SpecFailure(std::string amsg, const char* afile, int aline)
+            : msg(amsg), file(afile), line(aline) { }
+        std::string msg;
+        const char* file;
+        int line;
+    };
+
+
     class SpecWriter {
     public:
+        std::vector<SpecResult> mResults;
+        std::vector<SpecFailure> mFailures;
+        SpecWriter() {}
         virtual ~SpecWriter() {}
         virtual void startGroup(std::string group, std::string description) = 0;
-        virtual void addFailedAssertation(std::string msg, const char *file, int line) = 0;
-        virtual void addSpecResult(SpecResult r) = 0;
+        virtual void addFailedAssertation(std::string msg, const char *file, int line) {
+            mFailures.push_back( SpecFailure(msg,file,line) );
+        }
+        virtual void addSpecResult(SpecResult r) {
+            mResults.push_back( r );
+        }
         virtual void start() = 0;
         virtual void stop() = 0;
     };
+
+
+    class ProgressWriter : public SpecWriter {
+    public:
+        void startGroup(std::string /*group*/, std::string /*description*/);
+        void addSpecResult(SpecResult r);
+        void start();
+        void stop();
+    };
+
+
+
+    class SpecdocWriter : public SpecWriter {
+    public:
+        void startGroup(std::string group, std::string description);
+        void addFailedAssertation(std::string msg, const char *file, int line);
+        void addSpecResult(SpecResult r);
+        void start();
+        void stop();
+    };
+
 
 
 
@@ -78,8 +117,7 @@ namespace specific {
     public:
         static SpecRunner& getInstance();
         void add(SpecBase* spec) { mSpecs.push_back( spec ); }
-        bool run(const std::string subset = "");
-        void printSummary();
+        bool run(SpecWriter& writer, const std::string subset = "");
     private:
 
         std::vector<SpecBase*> mSpecs;
