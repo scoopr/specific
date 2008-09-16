@@ -72,3 +72,9 @@ describe(Spec, "should matcher failures (THESE SHOULD ALL FAIL!)") {
 
     
 }
+
+
+describe(OtherSpec, "just testing other group") {
+    it("foo test") {}
+}
+

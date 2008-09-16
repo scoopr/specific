@@ -6,12 +6,22 @@ int main(int argc, char *argv[])
 {
 
     std::string subset("");
-    if(argc > 1) subset=argv[1];
 
-    //specific::ProgressWriter writer;
-    specific::SpecdocWriter writer;
+    specific::ProgressWriter progressWriter;
+    specific::SpecdocWriter specdocWriter;
+    specific::SpecWriter* writer = &progressWriter;
 
-    bool success = specific::SpecRunner::getInstance().run(writer, subset);
+    for(size_t i = 1; i < size_t(argc); ++i) {
+        if( std::string("-s") == argv[i] ) {
+            writer = &specdocWriter;
+        } else {
+            subset = argv[i];
+        }
+    }
+
+
+    bool success = specific::SpecRunner::getInstance().run(*writer, subset);
 
     return success ? EXIT_SUCCESS : EXIT_FAILURE;
 }
+

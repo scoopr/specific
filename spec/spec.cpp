@@ -43,6 +43,7 @@ namespace specific {
                 std::cout << "E";
                 break;
         }
+        std::cout << std::flush;
     }
 
 
