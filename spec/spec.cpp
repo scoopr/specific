@@ -35,8 +35,8 @@ namespace specific {
 
 
 
-    void SpecWriter::startGroup(std::string group, std::string description) {
-    }
+    void SpecWriter::startGroup(std::string /*group*/, std::string /*description*/) {}
+
     void SpecWriter::addFailedAssertation(std::string msg, const char *file, int line) {
         mFailures.push_back( SpecFailure(msg,file,line) );
     }
@@ -103,7 +103,7 @@ namespace specific {
 
 
 
-
+    class spec_failure {};
 
 
 
@@ -156,6 +156,7 @@ namespace specific {
             mWriter->addFailedAssertation(message, file, line);
             mLastFailed = mFailed = true;
             mNumFailures+=1;
+            throw spec_failure();
         }
     }
 
@@ -204,6 +205,8 @@ namespace specific {
                 b->mExecutionPoint = 0;
                 try {
                     b->specify();
+                } catch(spec_failure& e) {
+                    b->mError=true;
                 } catch( std::exception& e) {
                     b->error(e.what());
                 } catch( ... ) {
