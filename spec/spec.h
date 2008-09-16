@@ -124,8 +124,6 @@ namespace specific {
         bool mError;
         int mExecutionPoint;
         int mContinuePoint;
-        int mNumTests;
-        int mNumFailures;
         char *mFile;
         std::string mErrorMessage;
         int mLine;
@@ -140,8 +138,6 @@ namespace specific {
     private:
 
         std::vector<SpecBase*> mSpecs;
-        int mNumTotalTests;
-        int mNumTotalFailures;
 
         SpecRunner();
         ~SpecRunner();

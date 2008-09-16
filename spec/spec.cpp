@@ -108,7 +108,7 @@ namespace specific {
 
 
     SpecBase::SpecBase() : mWriter(NULL), mName(NULL),
-        mFailed(false), mLastFailed(false), mError(false), mExecutionPoint(0), mContinuePoint(0), mNumTests(0), mNumFailures(0) 
+        mFailed(false), mLastFailed(false), mError(false), mExecutionPoint(0), mContinuePoint(0) 
     {
         SpecRunner::getInstance().add(this);
     }
@@ -151,11 +151,9 @@ namespace specific {
 
     void SpecBase::should_test(bool value, const char* message, const char* file, int line) {
         mLastFailed=false;
-        mNumTests+=1;
         if(!value) {
             mWriter->addFailedAssertation(message, file, line);
             mLastFailed = mFailed = true;
-            mNumFailures+=1;
             throw spec_failure();
         }
     }
@@ -163,7 +161,6 @@ namespace specific {
     
     void SpecBase::error(std::string msg) {
         mWriter->addFailedAssertation(msg, "exception", 0);
-        mNumFailures+=1;
         mLastFailed = true;
         mFailed = true;
         mError = true;
@@ -178,7 +175,7 @@ namespace specific {
     }
 
 
-    SpecRunner::SpecRunner() : mNumTotalTests(0), mNumTotalFailures(0) {}
+    SpecRunner::SpecRunner() {}
     SpecRunner::~SpecRunner() { }
 
     SpecRunner& SpecRunner::getInstance() {
@@ -217,8 +214,6 @@ namespace specific {
             } while( !b->done() );
             
             success = success && b->isSuccessful();
-            mNumTotalTests += b->mNumTests;
-            mNumTotalFailures += b->mNumFailures;
 
         }
         writer.stop();
