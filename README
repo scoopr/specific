@@ -1,0 +1,85 @@
+
+    specific - A small BDD-style unit test framework for C++.
+
+
+  Inspired by various ruby frameworks such as rspec, I wanted something
+  similiar for various C++ projects, so specific was born.
+
+  
+
+    Usage
+
+  Add spec.h, spec.cpp, main.cpp and all your *_spec.cpp files to
+  your "spec project", and you should get an executable test/specification
+  out of it.
+
+  The *_spec.cpp files have syntax this syntax:
+
+    #include "spec.h"
+  
+    describe(GroupName, "context description") {
+        it("example description") {
+            should_be_equal(1, 2);
+        }
+
+        it("should throw") {
+            std::vector<int> v;
+            v.push_back(1);
+            should_throw( v.at(999), std::out_of_range );
+        }
+    }
+
+
+  The default main.cpp takes -s argument if you want the output in
+  "specdoc" format instead of the default "progress" format. Also you can
+  give any string which will be matched as a substring to the 
+  describe-group, only those will be run.
+
+
+    Reference
+
+    describe(group, description)
+      This macro describes a "context" for tests. Group is used to group
+      similiar tests together, usually class name or similiar. While Group
+      is without quotes, it used used only as a string by macromagic, 
+      so it doesn't have to be anything "real".
+
+    it(description)
+      This macro describes an example, a block of code that tests the
+      proposition described in the description, given the context.
+
+    should_be_true( expr )
+      Assertation that tests that the expression yields is true
+
+    should_be_false( expr )
+      Assertation thtat tests that the expression yields is false
+    
+    should_be_equal( expr1, expr2 )
+      Asserts that the expressions yields equal value
+
+    should_not_be_equal( expr1, expr2 )
+      Asserts that the expressions yields inequal value
+
+    should_throw( expr, exceptionClass )
+      Asserts that the expression throws the given exception
+
+
+
+  Links
+    rspec - http://rspec.info/
+      Original inspiration
+
+    cppspec - http://www.laughingpanda.org/projects/cppspec/
+      Another C++ implementation. I disliked how it emphasis on
+      the postfix .should notation that seemed forced in C++,
+      but tries to keep C++ class/method, while it still resorts
+      to macro trickery.
+
+
+
+
+  License
+    The zlib/libpng license. See LICENSE
+
+
+
