@@ -8,8 +8,8 @@ int main(int argc, char *argv[])
     std::string subset("");
     if(argc > 1) subset=argv[1];
 
-    specific::ProgressWriter writer;
-    //specific::SpecdocWriter writer;
+    //specific::ProgressWriter writer;
+    specific::SpecdocWriter writer;
 
     bool success = specific::SpecRunner::getInstance().run(writer, subset);
 

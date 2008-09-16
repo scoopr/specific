@@ -41,24 +41,17 @@ namespace specific {
         std::vector<SpecFailure> mFailures;
         SpecWriter() {}
         virtual ~SpecWriter() {}
-        virtual void startGroup(std::string group, std::string description) = 0;
-        virtual void addFailedAssertation(std::string msg, const char *file, int line) {
-            mFailures.push_back( SpecFailure(msg,file,line) );
-        }
-        virtual void addSpecResult(SpecResult r) {
-            mResults.push_back( r );
-        }
-        virtual void start() = 0;
-        virtual void stop() = 0;
+        virtual void startGroup(std::string group, std::string description);
+        virtual void addFailedAssertation(std::string msg, const char *file, int line);
+        virtual void addSpecResult(SpecResult r);
+        virtual void start();
+        virtual void stop();
     };
 
 
     class ProgressWriter : public SpecWriter {
     public:
-        void startGroup(std::string /*group*/, std::string /*description*/);
         void addSpecResult(SpecResult r);
-        void start();
-        void stop();
     };
 
 
@@ -66,10 +59,7 @@ namespace specific {
     class SpecdocWriter : public SpecWriter {
     public:
         void startGroup(std::string group, std::string description);
-        void addFailedAssertation(std::string msg, const char *file, int line);
         void addSpecResult(SpecResult r);
-        void start();
-        void stop();
     };
 
 

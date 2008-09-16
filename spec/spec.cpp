@@ -6,9 +6,32 @@ namespace specific {
 
 
 
-    void ProgressWriter::startGroup(std::string /*group*/, std::string /*description*/) {}
+    void SpecWriter::startGroup(std::string group, std::string description) {
+    }
+    void SpecWriter::addFailedAssertation(std::string msg, const char *file, int line) {
+        mFailures.push_back( SpecFailure(msg,file,line) );
+    }
+    void SpecWriter::addSpecResult(SpecResult r) {
+        mResults.push_back( r );
+    }
+    void SpecWriter::start() {}
+    void SpecWriter::stop() {
+        std::cout << std::endl;
+        size_t nth = 0;
+        for(std::vector<SpecFailure>::iterator i=mFailures.begin(); i != mFailures.end(); ++i, ++nth)
+        {
+            std::cout << std::endl;
+            std::cout << (nth+1) << ") Failed assertation at " << i->file << ":"
+            << i->line << ":" << std::endl << "  " << i->msg << std::endl;
+        }
+        std::cout << std::endl << mResults.size() << " examples, " << mFailures.size() << " failures" << std::endl;
+ 
+    }
+ 
+
+
     void ProgressWriter::addSpecResult(SpecResult r) {
-         SpecWriter::addSpecResult(r);
+        SpecWriter::addSpecResult(r);
         switch(r.type) {
             case SpecResult::PASSED:
                 std::cout << ".";
@@ -21,16 +44,6 @@ namespace specific {
                 break;
         }
     }
-    void ProgressWriter::start() {}
-    void ProgressWriter::stop() {
-        std::cout << std::endl;
-        for(std::vector<SpecFailure>::iterator i=mFailures.begin(); i != mFailures.end(); ++i)
-        {
-            std::cout << std::endl;
-            std::cout << "Failed assertation at " << i->file << ":"
-            << i->line << ":" << std::endl << "  " << i->msg;
-        }
-    }
 
 
 
@@ -38,29 +51,25 @@ namespace specific {
         std::cout << group << ": " << description << std::endl;            
     }
 
-    void SpecdocWriter::addFailedAssertation(std::string msg, const char *file, int line) {
-        //std::cout << std::endl << std::endl;
-        //std::cout << "     Failed assertation at " << file << ":" << line << ": " << msg << std::endl;
-    }
 
     void SpecdocWriter::addSpecResult(SpecResult r) {
+        SpecWriter::addSpecResult(r);
+        size_t nth = mFailures.size();
         std::cout << "- " << r.test;
         switch(r.type) {
             case SpecResult::PASSED:
                 std::cout << " [OK]";
                 break;
             case SpecResult::FAILED:
-                std::cout << " [FAILED]";
+                std::cout << " [FAILED - " << nth << "]";
                 break;
             case SpecResult::ERRORED:
-                std::cout << " [ERROR]";
+                std::cout << " [ERROR - "<< nth <<"]";
                 break;
         }
         std::cout << std::endl;
     }
 
-    void SpecdocWriter::start() {}
-    void SpecdocWriter::stop() {}
 
 
 
@@ -88,7 +97,6 @@ namespace specific {
         if(mExecutionPoint <= mContinuePoint) return false;
         mContinuePoint++;
 
-//        std::cout << " - " << name ;
         mName = name;
         return true;
     }
@@ -97,11 +105,6 @@ namespace specific {
     void SpecBase::endSpec() 
     {
         if(!mName) return;
-/*        if(mLastFailed) {
-            std::cout << "  [FAILED]" << std::endl;
-        } else {
-            std::cout << "  [OK]" << std::endl;
-        }*/
 
         SpecResult r;
         r.group = getGroup();
@@ -120,8 +123,6 @@ namespace specific {
         mLastFailed=false;
         mNumTests+=1;
         if(!value) {
-/*            std::cout << std::endl << "  Failed assertation at " << file << ":" << line << ": " << 
-                std::endl <<  "    " << message;*/
             mWriter->addFailedAssertation(message, file, line);
             mLastFailed = mFailed = true;
             mNumFailures+=1;
