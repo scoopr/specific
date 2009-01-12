@@ -1,0 +1,4 @@
+*.o
+specsuite
+.*.swp
+
