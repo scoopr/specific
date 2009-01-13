@@ -26,21 +26,37 @@ freely, subject to the following restrictions:
     distribution.
 */
 
-
+// Define this if you don't want to print the values instead of 
+// variable names in _equals comparision
+// #define SPECIFIC_NO_OSTREAM
 #include "spec.h"
 
 
 class ClassThatEqualsAny {
 public:
-    template<typename T> bool operator==(T /* anything */ ) { return true; }
-    template<typename T> bool operator!=(T /* anything */ ) { return false; }
+    template<typename T> bool operator==(const T& /* anything */ ) const { return true; }
+    template<typename T> bool operator!=(const T& /* anything */ ) const { return false; }
 };
 
 class ClassThatEqualsNone {
 public:
-    template<typename T> bool operator==(T /* anything */ ) { return false; }
-    template<typename T> bool operator!=(T /* anything */ ) { return true; }
+    template<typename T> bool operator==(const T& /* anything */ ) const { return false; }
+    template<typename T> bool operator!=(const T& /* anything */ ) const { return true; }
 };
+
+
+// By default the value of an variable is printed through ostream operators
+std::ostream& operator<<(std::ostream& os, const ClassThatEqualsAny& ) {
+    return os << "class-that-equals-any-value";
+}
+
+namespace specific {
+    // Optionally you can specialize Specific-specific inspect method
+    template <> std::string inspect(const ClassThatEqualsNone& ) {
+        return "class-that-equals-none-value";
+    }
+}
+
 
 
 describe(Spec, "should matchers") {

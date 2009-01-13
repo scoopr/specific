@@ -33,7 +33,7 @@ freely, subject to the following restrictions:
 #include <string>
 #include <vector>
 #include <stdexcept>
-
+#include <sstream>
 
 namespace specific {
 
@@ -93,6 +93,12 @@ namespace specific {
 
 
 
+    template<class T> std::string inspect(const T& value) {
+        std::stringstream ss;
+        ss << value;
+        return ss.str();
+    }
+
 
     class SpecBase {
     public:
@@ -107,6 +113,20 @@ namespace specific {
         void endSpec();
 
         void should_test(bool value, const char* message, const char* file, int line);
+
+        template<typename T1, typename T2> void should_equal_template(const T1& a, const T2& b, const char* file, int line) {
+            std::stringstream ss;
+            ss << "`" << inspect(a) << "'" << " == " << "`" << inspect(b) << "'";
+            should_test( a == b, ss.str().c_str(), file, line);
+        }
+
+        template<typename T1, typename T2> void should_not_equal_template(const T1& a, const T2& b, const char* file, int line) {
+            std::stringstream ss;
+            ss << "`" << inspect(a) << "'" << " != " << "`" << inspect(b) << "'";
+            should_test( a != b, ss.str().c_str(), file, line);
+        }
+
+
 
         virtual std::string getGroup() = 0;
         virtual std::string getDescription() = 0;
@@ -167,9 +187,14 @@ namespace specific {
     // Matchers
     #define should_be_true(a) should_test(a, #a, __FILE__, __LINE__)
     #define should_be_false(a) should_be_true( !a )
-    #define should_equal(a, b) should_be_true( (a) == (b) )
 
-    #define should_not_equal(a, b) should_be_true( (a) != (b) )
+    #ifndef SPECIFIC_NO_OSTREAM
+        #define should_equal(a, b) should_equal_template( a,b, __FILE__, __LINE__ )
+        #define should_not_equal(a, b) should_not_equal_template( a,b, __FILE__, __LINE__ )
+    #else
+        #define should_equal(a, b) should_be_true( (a) == (b) )
+        #define should_not_equal(a, b) should_be_true( (a) != (b) )
+    #endif
 
     #define should_throw(code, what) \
     do {                             \

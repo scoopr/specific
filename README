@@ -29,6 +29,14 @@
         }
     }
 
+  should_be_equal uses  std::string specific::inspect(const T& val)
+  for displaying the value of object in error messages. By default it
+  uses the standard stream interface, so if you have operator<< defined for
+  std::ostream and your class you are set. Alternatively, you can 
+  template-specialize the inspect function if want to massage the 
+  representation to be Specific-specific. You can also disable values in
+  error messages by defining SPECIFIC_NO_OSTREAM before including spec.h,
+  the variable names are used instead. 
 
   The default main.cpp takes -s argument if you want the output in
   "specdoc" format instead of the default "progress" format. Also you can
