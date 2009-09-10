@@ -116,13 +116,13 @@ namespace specific {
 
         template<typename T1, typename T2> void should_equal_template(const T1& a, const T2& b, const char* file, int line) {
             std::stringstream ss;
-            ss << "`" << inspect(a) << "'" << " == " << "`" << inspect(b) << "'";
+            ss << "`" << ::specific::inspect(a) << "'" << " == " << "`" << ::specific::inspect(b) << "'";
             should_test( a == b, ss.str().c_str(), file, line);
         }
 
         template<typename T1, typename T2> void should_not_equal_template(const T1& a, const T2& b, const char* file, int line) {
             std::stringstream ss;
-            ss << "`" << inspect(a) << "'" << " != " << "`" << inspect(b) << "'";
+            ss << "`" << ::specific::inspect(a) << "'" << " != " << "`" << ::specific::inspect(b) << "'";
             should_test( a != b, ss.str().c_str(), file, line);
         }
 
