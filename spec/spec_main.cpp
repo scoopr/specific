@@ -27,7 +27,7 @@ freely, subject to the following restrictions:
 */
 
 
-#include "spec/spec.h"
+#include "spec.h"
 #include <cstdlib>
 
 int main(int argc, char *argv[]) 

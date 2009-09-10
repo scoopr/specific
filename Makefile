@@ -4,10 +4,9 @@
 CXXFLAGS += -pedantic -Werror -Wall -Wextra -g
 LDFLAGS +=
 
-MAIN_SRC = main.cpp 
 SPEC_SRC = $(wildcard spec/*.cpp)
 
-SRCS = $(MAIN_SRC) $(SPECIFIC_SRC) $(SPEC_SRC) 
+SRCS = $(SPECIFIC_SRC) $(SPEC_SRC) 
 OBJS = $(SRCS:.cpp=.o)
 
 
@@ -43,8 +42,9 @@ depend:
 
 # DO NOT DELETE
 
-main.o: spec/spec.h
 spec/spec.o: spec/spec.h
+spec/spec_main.o: spec/spec.h
 spec/spec_spec.o: spec/spec.h
 spec/spec.o: spec/spec.h
+spec/spec_main.o: spec/spec.h
 spec/spec_spec.o: spec/spec.h
