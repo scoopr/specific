@@ -1,7 +1,7 @@
 
 .PHONY: all clean depend info
 
-CXXFLAGS += -g -Wall -Wextra
+CXXFLAGS += -pedantic -Werror -Wall -Wextra -g
 LDFLAGS +=
 
 MAIN_SRC = main.cpp 
