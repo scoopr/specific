@@ -201,7 +201,7 @@ namespace specific {
         bool _thrown = false;        \
         try {                        \
           code ;                     \
-        } catch(what& e) {           \
+        } catch(what& /*e*/) {       \
             _thrown = true;          \
         }                            \
         should_test(_thrown, "should throw exception " #what, __FILE__, __LINE__); \

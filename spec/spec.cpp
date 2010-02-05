@@ -202,7 +202,7 @@ namespace specific {
                 b->mExecutionPoint = 0;
                 try {
                     b->specify();
-                } catch(spec_failure& e) {
+                } catch(spec_failure& /*e*/) {
                     b->mError=true;
                 } catch( std::exception& e) {
                     b->error(e.what());
