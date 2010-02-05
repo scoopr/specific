@@ -37,8 +37,8 @@ namespace specific {
 
     void SpecWriter::startGroup(std::string /*group*/, std::string /*description*/) {}
 
-    void SpecWriter::addFailedAssertation(std::string msg, const char *file, int line) {
-        mFailures.push_back( SpecFailure(msg,file,line) );
+    void SpecWriter::addFailedAssertation(const std::string& msg, const char *file, int line, const std::string& group, const std::string& description) {
+        mFailures.push_back( SpecFailure(msg, file, line, group, description) );
     }
     void SpecWriter::addSpecResult(SpecResult r) {
         mResults.push_back( r );
@@ -47,11 +47,21 @@ namespace specific {
     void SpecWriter::stop() {
         std::cout << std::endl;
         size_t nth = 0;
+        std::string lastgroup = "";
+        std::string lastdescription = "";
         for(std::vector<SpecFailure>::iterator i=mFailures.begin(); i != mFailures.end(); ++i, ++nth)
         {
             std::cout << std::endl;
-            std::cout << (nth+1) << ") Failed assertation at " << i->file << ":"
-            << i->line << ":" << std::endl << "  " << i->msg << std::endl;
+            if(lastgroup != i->group || lastdescription != i->description) {
+                
+                lastgroup = i->group;
+                lastdescription = i->description;
+
+                std::cout << std::endl;
+                std::cout << "In " << i->group << ": " << i->description << ":" << std::endl << std::endl;
+            }
+            std::cout << " " << (nth+1) << ") Failed assertation at " << i->file << ":"
+            << i->line << ":" << std::endl << "   " << i->msg << std::endl;
         }
         std::cout << std::endl << mResults.size() << " examples, " << mFailures.size() << " failures" << std::endl;
  
@@ -152,7 +162,7 @@ namespace specific {
     void SpecBase::should_test(bool value, const char* message, const char* file, int line) {
         mLastFailed=false;
         if(!value) {
-            mWriter->addFailedAssertation(message, file, line);
+            mWriter->addFailedAssertation(message, file, line, getGroup(), getDescription());
             mLastFailed = mFailed = true;
             throw spec_failure();
         }
@@ -160,7 +170,7 @@ namespace specific {
 
     
     void SpecBase::error(std::string msg) {
-        mWriter->addFailedAssertation(msg, "exception", 0);
+        mWriter->addFailedAssertation(msg, "(exception)", 0, getGroup(), getDescription());
         mLastFailed = true;
         mFailed = true;
         mError = true;

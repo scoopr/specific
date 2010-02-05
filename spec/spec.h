@@ -56,11 +56,13 @@ namespace specific {
 
     class SpecFailure {
     public:
-        SpecFailure(std::string amsg, const char* afile, int aline)
-            : msg(amsg), file(afile), line(aline) { }
+        SpecFailure(const std::string& amsg, const char* afile, int aline, const std::string& agroup, const std::string& adescription)
+            : msg(amsg), file(afile), line(aline), group(agroup), description(adescription) { }
         std::string msg;
         const char* file;
         int line;
+        std::string group;
+        std::string description;
     };
 
 
@@ -71,7 +73,7 @@ namespace specific {
         SpecWriter() {}
         virtual ~SpecWriter() {}
         virtual void startGroup(std::string group, std::string description);
-        virtual void addFailedAssertation(std::string msg, const char *file, int line);
+        virtual void addFailedAssertation(const std::string& msg, const char *file, int line, const std::string& group, const std::string& description);
         virtual void addSpecResult(SpecResult r);
         virtual void start();
         virtual void stop();
